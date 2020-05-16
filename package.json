@@ -1,0 +1,11 @@
+{
+  "name": "vivoteste",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/rjrenan77/vivochallenge.git",
+  "license": "MIT",
+  "dependencies": {
+    "date-fns": "^2.13.0",
+    "date-fns-tz": "^1.0.10"
+  }
+}
