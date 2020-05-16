@@ -35,12 +35,30 @@ function jobSchedule(executionWindow, data) {
     }
 
     //dataMaximaDeConclusao está entre as datas minimas e maximas de execução?
-    if((compareDataMaximaWithStartTime === 1 || compareDataMaximaWithStartTime === 0) && (compareDataMaximaWithEndTime === -1 || compareDataMaximaWithEndTime === 0)){
+    if((compareDataMaximaWithStartTime === 1 || compareDataMaximaWithStartTime === 0) && 
+       (compareDataMaximaWithEndTime === -1 || compareDataMaximaWithEndTime === 0)){
+    
       console.log(compareDataMaximaWithStartTime +" " + compareDataMaximaWithEndTime + "dataMaximadeConclusao enta entre as datas de execucao")
 
-      jobsArray.push(data[i].id);
 
+     jobsArray.push(data[i])
+
+     let sum= [];
+
+     for(let k = 0; k< jobsArray.length; k++) {
+      for(let j = k+1;  j < jobsArray.length; j++) {
+        if(8 == jobsArray[k].tempoEstimado + jobsArray[j].tempoEstimado)
+           sum.push([jobsArray[k].id,jobsArray[j].id])
+        else if(sum.length === 0)
+          console.log(sum)  
+        else  
+          sum.push(jobsArray[k].id);
+          
+          console.log(sum)
+      }
+     }
      
+    
     }
     
   }
@@ -52,7 +70,7 @@ function jobSchedule(executionWindow, data) {
 
 
 
-console.log(jobSchedule({startTime: '2019-11-10 09:00:00',
+jobSchedule({startTime: '2019-11-10 09:00:00',
   endTime: '2019-11-11 12:00:00'}, [
     {
     "id": 1,
@@ -72,4 +90,4 @@ console.log(jobSchedule({startTime: '2019-11-10 09:00:00',
     "dataMaxima": '2019-11-11 08:00:00',
     "tempoEstimado": 6 ,
     },
-  ]));
+  ]);
