@@ -1,12 +1,7 @@
-// funcao que recebe um objeto que possui a janela de execucao com data e hora de inicio e fim mais a massa de dados
-// antes de executar a funcao, validar se as datas maximas de conclusão batem com a janela de execução
-// calcular na ordem de datas o prazo maximo de 8 horas para cada array de job retornado
-
 const dateFNS = require('date-fns');
 const dateTZ = require('date-fns-tz');
 
 const ArrayComparer =  require('./util/arrayComparer.js');
-
 
 function jobSchedule(executionWindow, data) {
 
@@ -96,33 +91,4 @@ function jobSchedule(executionWindow, data) {
 
 }
 
-
-
-
-jobSchedule({startTime: '2019-11-10 09:00:00',
-  endTime: '2019-11-11 12:00:00'}, [
-    {
-    "id": 1,
-    "descricao": "Importação de arquivos de fundos",
-    "dataMaxima": '2019-11-10 12:00:00',
-    "tempoEstimado": 2 ,
-    },
-    {
-    "id": 2,
-    "descricao": "Importação de dados da Base Legada",
-    "dataMaxima": '2019-11-11 12:00:00',
-    "tempoEstimado": 4 ,
-    },
-    {
-    "id": 3,
-    "descricao": "Importação de dados de integração",
-    "dataMaxima": '2019-11-11 08:00:00',
-    "tempoEstimado": 6 ,
-    },
-    {
-      "id": 4,
-      "descricao": "Importação de dados da Base Legada",
-      "dataMaxima": '2019-11-11 12:00:00',
-      "tempoEstimado": 4 ,
-      }
-  ]);
+exports.jobSchedule = jobSchedule;

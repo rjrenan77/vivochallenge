@@ -4,8 +4,14 @@
   "main": "index.js",
   "repository": "https://github.com/rjrenan77/vivochallenge.git",
   "license": "MIT",
+  "scripts": {
+    "test":"jest"
+  },
   "dependencies": {
     "date-fns": "^2.13.0",
     "date-fns-tz": "^1.0.10"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
   }
 }
