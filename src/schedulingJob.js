@@ -8,6 +8,7 @@ const dateTZ = require('date-fns-tz');
 function jobSchedule(executionWindow, data) {
 
   const jobsArray = [];
+  const executionMaxTime = 8;
 
   const parsedToDateStartTime = dateFNS.parseISO(executionWindow.startTime);
   const znDateStartTime = dateTZ.zonedTimeToUtc(parsedToDateStartTime, 'America/Sao_Paulo');
@@ -38,30 +39,36 @@ function jobSchedule(executionWindow, data) {
     if((compareDataMaximaWithStartTime === 1 || compareDataMaximaWithStartTime === 0) && 
        (compareDataMaximaWithEndTime === -1 || compareDataMaximaWithEndTime === 0)){
     
-      console.log(compareDataMaximaWithStartTime +" " + compareDataMaximaWithEndTime + "dataMaximadeConclusao enta entre as datas de execucao")
+    //  console.log(compareDataMaximaWithStartTime +" " + compareDataMaximaWithEndTime + "dataMaximadeConclusao enta entre as datas de execucao")
 
-
-     jobsArray.push(data[i])
-
-     let sum= [];
-
-     for(let k = 0; k< jobsArray.length; k++) {
-      for(let j = k+1;  j < jobsArray.length; j++) {
-        if(8 == jobsArray[k].tempoEstimado + jobsArray[j].tempoEstimado)
-           sum.push([jobsArray[k].id,jobsArray[j].id])
-        else if(sum.length === 0)
-          console.log(sum)  
-        else  
-          sum.push(jobsArray[k].id);
-          
-          console.log(sum)
-      }
-     }
-     
-    
+      jobsArray.push(data[i])
+      
+      
     }
     
   }
+
+  //order by asc conclusion date
+  jobsArray.sort(function(a,b){
+    return new Date(a.dataMaxima) - new Date(b.dataMaxima);
+  });
+
+  
+  let sum= [];
+
+  for(let k = 0; k< jobsArray.length; k++) {
+    for(let j = k+1;  j < jobsArray.length; j++) {
+      if(jobsArray[k].tempoEstimado + jobsArray[j].tempoEstimado === executionMaxTime)
+        sum.push([jobsArray[k].id,jobsArray[j].id])
+      else if(sum.length === 0)
+        console.log(sum)  
+      else  
+        sum.push([jobsArray[j].id]);
+        
+        console.log(sum)
+    }
+  }
+ 
 
   return jobsArray;
 
@@ -90,4 +97,5 @@ jobSchedule({startTime: '2019-11-10 09:00:00',
     "dataMaxima": '2019-11-11 08:00:00',
     "tempoEstimado": 6 ,
     },
+   
   ]);
