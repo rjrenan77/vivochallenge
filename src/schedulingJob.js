@@ -5,76 +5,94 @@
 const dateFNS = require('date-fns');
 const dateTZ = require('date-fns-tz');
 
+const ArrayComparer =  require('./util/arrayComparer.js');
+
+
 function jobSchedule(executionWindow, data) {
 
   const jobsArray = [];
+  const ids= [];
   const executionMaxTime = 8;
 
+  //creating a prototype to find an array in a array
+  Array.prototype.containsArray = function(val) {
+    var hash = {};
+    for(var i=0; i<this.length; i++) {
+        hash[this[i]] = i;
+    }
+    return hash.hasOwnProperty(val);
+  }
+
+  //converting received start time date from string to date
   const parsedToDateStartTime = dateFNS.parseISO(executionWindow.startTime);
   const znDateStartTime = dateTZ.zonedTimeToUtc(parsedToDateStartTime, 'America/Sao_Paulo');
-
   const parsedToDateEndTime = dateFNS.parseISO(executionWindow.endTime);
   const znDateEndTime = dateTZ.zonedTimeToUtc(parsedToDateEndTime, 'America/Sao_Paulo');
 
   for(let i = 0; i < data.length; i++){
-
+    //converting received conclusion job time date from string to date and comparing with start time date
     const parsedToDateDataMaxima = dateFNS.parseISO(data[i].dataMaxima);
     const znDateDataMaxima = dateTZ.zonedTimeToUtc(parsedToDateDataMaxima, 'America/Sao_Paulo');
-
     const compareDataMaximaWithStartTime = dateFNS.compareAsc(znDateDataMaxima, znDateStartTime);
     const compareDataMaximaWithEndTime = dateFNS.compareAsc(znDateDataMaxima, znDateEndTime);
 
-    //dataMaximaDeConclusao é menor do que a data inicial de execução?
+    
     if(compareDataMaximaWithStartTime === -1){
-     console.log(compareDataMaximaWithStartTime + "dataMaximadeConclusao é menor do que a data inicial de execucao")
-      
+     console.log("Data máxima de conclusão do job é menor do que a data inicial de execucao logo não será computada")
     }
-
-    //dataMaximaDeConclusao é maior do que a data final de execução?
     if(compareDataMaximaWithEndTime === 1){
-     console.log(compareDataMaximaWithEndTime + "dataMaximadeConclusao é maior do que a data final de execucao")
+     console.log(compareDataMaximaWithEndTime + "Data máxima de conclusão do job é maior do que a data inicial de execucao logo não será computada")
     }
 
-    //dataMaximaDeConclusao está entre as datas minimas e maximas de execução?
+    //dates is ok and will be runned
     if((compareDataMaximaWithStartTime === 1 || compareDataMaximaWithStartTime === 0) && 
        (compareDataMaximaWithEndTime === -1 || compareDataMaximaWithEndTime === 0)){
-    
-    //  console.log(compareDataMaximaWithStartTime +" " + compareDataMaximaWithEndTime + "dataMaximadeConclusao enta entre as datas de execucao")
-
-      jobsArray.push(data[i])
-      
-      
+         jobsArray.push(data[i])
     }
     
   }
 
-  //order by asc conclusion date
+  //ordering by asc conclusion date
   jobsArray.sort(function(a,b){
     return new Date(a.dataMaxima) - new Date(b.dataMaxima);
   });
 
-  
-  let sum= [];
-
+  // executing according business rules
   for(let k = 0; k < jobsArray.length; k++) {
     for(let j = k+1;  j < jobsArray.length; j++) {
-     
-      if(jobsArray[k].tempoEstimado + jobsArray[j].tempoEstimado === executionMaxTime){
-        sum.push([jobsArray[k].id,jobsArray[j].id])
-         break;
+      if(jobsArray[k].tempoEstimado + jobsArray[j].tempoEstimado <= executionMaxTime){
+        //testing if we already have the same id in the array, if it does, replace it with job ids with a maximum of 8 hours
+        if(ids.containsArray([jobsArray[k].id]) || ids.containsArray([jobsArray[j].id])){
+          const indexk = ArrayComparer.indexOf(ids, [jobsArray[k].id], ArrayComparer.arraysIdentical);
+          const indexj = ArrayComparer.indexOf(ids, [jobsArray[j].id], ArrayComparer.arraysIdentical);
+        
+          if(indexk !== -1){
+            ids[indexk] = [jobsArray[k].id,jobsArray[j].id];
+            break;
+          }
+          if(indexj !== -1){
+            ids[indexj] = [jobsArray[k].id,jobsArray[j].id];
+            break;
+          }
+
+        } 
+        else {
+          ids.push([jobsArray[k].id,jobsArray[j].id]);
+          break;
+        }
+          
       }
       else {
-        sum.push([jobsArray[j].id]);
+        ids.push([jobsArray[j].id]);
         break;
-
       } 
-        
+      
     }
   }
 
-  console.log(sum)
+  console.log(ids)
  
-  return jobsArray;
+  return ids;
 
 }
 
@@ -101,5 +119,10 @@ jobSchedule({startTime: '2019-11-10 09:00:00',
     "dataMaxima": '2019-11-11 08:00:00',
     "tempoEstimado": 6 ,
     },
-   
+    {
+      "id": 4,
+      "descricao": "Importação de dados da Base Legada",
+      "dataMaxima": '2019-11-11 12:00:00',
+      "tempoEstimado": 4 ,
+      }
   ]);
