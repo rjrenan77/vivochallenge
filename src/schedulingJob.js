@@ -56,20 +56,24 @@ function jobSchedule(executionWindow, data) {
   
   let sum= [];
 
-  for(let k = 0; k< jobsArray.length; k++) {
+  for(let k = 0; k < jobsArray.length; k++) {
     for(let j = k+1;  j < jobsArray.length; j++) {
-      if(jobsArray[k].tempoEstimado + jobsArray[j].tempoEstimado === executionMaxTime)
+     
+      if(jobsArray[k].tempoEstimado + jobsArray[j].tempoEstimado === executionMaxTime){
         sum.push([jobsArray[k].id,jobsArray[j].id])
-      else if(sum.length === 0)
-        console.log(sum)  
-      else  
+         break;
+      }
+      else {
         sum.push([jobsArray[j].id]);
+        break;
+
+      } 
         
-        console.log(sum)
     }
   }
- 
 
+  console.log(sum)
+ 
   return jobsArray;
 
 }
